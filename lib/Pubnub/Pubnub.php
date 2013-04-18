@@ -2,7 +2,7 @@
 
 namespace Pubnub;
 
-//require_once('PubnubAES.php');
+require_once(__DIR__ . '/PubnubAES.php');
 
 /**
  * PubNub 3.4 Real-time Push Cloud API
@@ -36,6 +36,19 @@ class Pubnub
      * @param boolean $ssl required for 2048 bit encrypted messages.
      */
 
+    public function __construct(
+        $publish_key = 'demo',
+        $subscribe_key = 'demo',
+        $secret_key = false,
+        $cipher_key = false,
+        $ssl = false,
+        $origin = false,
+        $pem_path = false) 
+    {
+        $this->Pubnub($publish_key, $subscribe_key, $secret_key, $cipher_key,
+            $ssl, $origin, $pem_path);
+    }
+    
 
     function Pubnub(
         $publish_key = 'demo',
@@ -479,7 +492,7 @@ class Pubnub
      */
     private function _request($request, $urlParams = false)
     {
-        $request = array_map('Pubnub::_encode', $request);
+        $request = array_map('\Pubnub\Pubnub::_encode', $request);
 
         array_unshift($request, $this->ORIGIN);
 
@@ -544,7 +557,7 @@ class Pubnub
      */
     private static function _encode($part)
     {
-        $pieces = array_map('Pubnub::_encode_char', str_split($part));
+        $pieces = array_map('\Pubnub\Pubnub::_encode_char', str_split($part));
         return implode('', $pieces);
     }
 
