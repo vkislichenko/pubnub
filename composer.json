@@ -1,12 +1,13 @@
 {
-    "name": "gektor1/pubnub",
+    "name": "vkislichenko/pubnub",
     "type": "library",
     "description": "This is a cloud-based service for broadcasting Real-time messages",
     "keywords": ["api"],
     "homepage": "http://www.pubnub.com/",
     "license": "MIT",
     "authors": [
-        {"name": "Dmitry Medvedev", "email": "gektor1@gmail.com"}
+        {"name": "Dmitry Medvedev", "email": "gektor1@gmail.com"},
+		{"name": "Victor Kislichenko", "email": "dofer@bigmir.net"}
     ],
     "require": {
         "php": ">=5.3.0"
