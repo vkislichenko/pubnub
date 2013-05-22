@@ -2,8 +2,6 @@
 
 namespace Pubnub;
 
-require_once(__DIR__ . '/PubnubAES.php');
-
 /**
  * PubNub 3.4 Real-time Push Cloud API
  * @package Pubnub
@@ -19,6 +17,11 @@ class Pubnub {
     private $SESSION_UUID = '';
     // New style response contains channel after timetoken
     // Old style response does not
+	
+	/**
+	 * @var PubnubAES 
+	 */
+	private $AES;
 
     private $NEW_STYLE_RESPONSE = true;
     private $PEM_PATH = __DIR__;
@@ -34,22 +37,17 @@ class Pubnub {
      * @param string $origin optional setting for cloud origin.
      * @param boolean $ssl required for 2048 bit encrypted messages.
      */
-    public function __construct(
-    $publish_key = 'demo', $subscribe_key = 'demo', $secret_key = false, $cipher_key = false, $ssl = false, $origin = false, $pem_path = false) {
-        $this->Pubnub($publish_key, $subscribe_key, $secret_key, $cipher_key, $ssl, $origin, $pem_path);
-    }
-
-    function Pubnub(
-    $publish_key = 'demo', $subscribe_key = 'demo', $secret_key = false, $cipher_key = false, $ssl = false, $origin = false, $pem_path = false
-    ) {
-
+    public function __construct($publish_key = 'demo', $subscribe_key = 'demo', $secret_key = false, $cipher_key = false, $ssl = false, $origin = false, $pem_path = false) 
+	{
+		$this->AES = new PubnubAES();
+		
         $this->SESSION_UUID = $this->uuid();
 
         $this->PUBLISH_KEY = $publish_key;
         $this->SUBSCRIBE_KEY = $subscribe_key;
         $this->SECRET_KEY = $secret_key;
 
-        if (!isBlank($cipher_key)) {
+        if (!$this->AES->isBlank($cipher_key)) {
             $this->CIPHER_KEY = $cipher_key;
         }
 
@@ -128,7 +126,7 @@ class Pubnub {
 
     public function sendMessage($message_org) {
         if ($this->CIPHER_KEY != false) {
-            $message = json_encode(encrypt(json_encode($message_org), $this->CIPHER_KEY));
+            $message = json_encode($this->AES->encrypt(json_encode($message_org), $this->CIPHER_KEY));
         } else {
             $message = json_encode($message_org);
         }
@@ -286,7 +284,7 @@ class Pubnub {
         foreach ($messageArray as $message) {
 
             if ($this->CIPHER_KEY) {
-                $decryptedMessage = decrypt($message, $this->CIPHER_KEY);
+                $decryptedMessage = $this->AES->decrypt($message, $this->CIPHER_KEY);
                 $message = json_decode($decryptedMessage, true);
             }
 
